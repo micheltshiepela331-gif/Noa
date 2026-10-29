@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#101418">
+<title>Lushi Tab</title>
+<style>
+:root{--ac:#ff8a1f;--bg:#0f1317;--pan:#1b2026;--pan2:#252b33;--ln:#343b45;--tx:#eef1f4;--mu:#9aa4b1;--ok:#3ccf7a;--bad:#ff5b5b;--fs:14px;--tb:46px}
+:root.light{--pan:#f4f5f7;--pan2:#e7eaee;--ln:#cfd5dc;--tx:#1d232a;--mu:#5d6773}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font:var(--fs) system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html.mouse,html.mouse *{cursor:none!important}
+input,textarea,select,button{font:inherit;color:inherit}
+textarea,input[type=text],input[type=number],input[type=search],input:not([type]){user-select:text;-webkit-user-select:text}
+button{cursor:pointer}
+#desk{position:fixed;inset:0 0 var(--tb) 0;background:var(--wall);background-size:cover;overflow:hidden}
+#icons{position:absolute;left:8px;top:8px;bottom:8px;display:flex;flex-direction:column;flex-wrap:wrap;align-content:flex-start;gap:6px}
+.di{width:86px;padding:6px 2px;border-radius:8px;text-align:center;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8);border:1px solid transparent}
+.di:hover{background:rgba(255,255,255,.12)}.di.sel{background:rgba(255,138,31,.28);border-color:rgba(255,138,31,.6)}
+.di .ic,.sm .ic,.tbw .ic{display:flex;align-items:center;justify-content:center;width:44px;height:44px;margin:0 auto 4px;border-radius:12px;font-size:24px;box-shadow:0 3px 10px rgba(0,0,0,.35)}
+.di span{font-size:12px;display:block;line-height:1.2}
+#clockw{position:absolute;right:22px;top:18px;text-align:right;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6);pointer-events:none}
+#clockw .t{font-size:58px;font-weight:300;letter-spacing:-1px}#clockw .d{font-size:16px;opacity:.9}#clockw .w{font-size:13px;opacity:.85;margin-top:4px}
+#bar{position:fixed;left:0;right:0;bottom:0;height:var(--tb);background:rgba(16,19,23,.94);backdrop-filter:blur(10px);border-top:1px solid #2a3038;display:flex;align-items:center;gap:4px;padding:0 6px;z-index:9000;color:#eef1f4}
+#bStart{width:42px;height:36px;border-radius:8px;border:0;background:var(--ac);color:#111;font-weight:900;font-size:18px}
+#bStart.on{box-shadow:0 0 0 2px #fff inset}
+#pins{display:flex;gap:3px;padding-right:6px;margin-right:2px;border-right:1px solid #333a43}.pin{position:relative;width:40px;height:36px;border-radius:8px;border:1px solid transparent;background:none;display:flex;align-items:center;justify-content:center}.pin:hover{background:rgba(255,255,255,.1)}.pin .ic{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px}.pin.run::after{content:'';position:absolute;bottom:1px;left:12px;right:12px;height:3px;border-radius:2px;background:var(--ac)}#tasks{flex:1;display:flex;gap:4px;overflow:hidden}
+.tk{max-width:170px;min-width:42px;height:36px;border-radius:8px;border:1px solid transparent;background:rgba(255,255,255,.06);color:#eef1f4;display:flex;align-items:center;gap:6px;padding:0 8px;white-space:nowrap;overflow:hidden;font-size:12.5px}
+.tk.on{background:rgba(255,138,31,.22);border-color:rgba(255,138,31,.6)}.tk.min{opacity:.55}
+.tray{display:flex;align-items:center;gap:6px;font-size:12px;color:#d9dee4}
+.tray button{background:rgba(255,255,255,.07);border:1px solid #333a43;border-radius:7px;padding:4px 8px;color:#eef1f4;font-weight:700;font-size:12px}
+#tclock{text-align:right;line-height:1.15;padding:0 4px;min-width:64px;border-radius:6px}#tclock:hover{background:rgba(255,255,255,.08)}
+#start{position:fixed;left:6px;bottom:calc(var(--tb) + 6px);width:min(560px,calc(100vw - 12px));max-height:calc(100vh - var(--tb) - 14px);background:rgba(27,32,38,.97);border:1px solid #39414b;border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.6);z-index:9500;display:none;flex-direction:column;color:#eef1f4;overflow:hidden}
+#start.on{display:flex}
+#start .top{padding:14px 14px 8px;display:flex;gap:10px;align-items:center}
+#start .av{width:40px;height:40px;border-radius:50%;background:var(--ac);color:#111;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px}
+#sq{flex:1;background:#12161b;border:1px solid #39414b;border-radius:10px;padding:9px 12px;color:#eef1f4}
+#sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;padding:6px 12px 12px;overflow:auto}
+.sm{border-radius:10px;padding:8px 4px;text-align:center;font-size:12px;border:1px solid transparent;background:none;color:#eef1f4}
+.sm:hover,.sm.kb{background:rgba(255,255,255,.08);border-color:#444c57}
+#start h6{font-size:11px;color:#9aa4b1;margin:4px 14px 0;text-transform:uppercase;letter-spacing:.5px;grid-column:1/-1}
+#start .bot{display:flex;gap:6px;padding:10px 12px;border-top:1px solid #333a43;background:rgba(0,0,0,.2)}
+#start .bot button{flex:1;background:#252b33;border:1px solid #39414b;border-radius:9px;padding:8px;color:#eef1f4}
+.win{position:absolute;min-width:260px;min-height:170px;background:var(--pan);border:1px solid var(--ln);border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,.55);display:flex;flex-direction:column;overflow:hidden}
+.win.act{border-color:var(--ac);box-shadow:0 18px 50px rgba(0,0,0,.65),0 0 0 1px rgba(255,138,31,.35)}
+.win.max{left:0!important;top:0!important;width:100%!important;height:100%!important;border-radius:0}
+.win.hid{display:none}
+.wt{height:36px;flex:none;display:flex;align-items:center;gap:8px;padding:0 4px 0 10px;background:var(--pan2);border-bottom:1px solid var(--ln);touch-action:none}
+.wt .ti{flex:1;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wt button{width:34px;height:28px;border:0;border-radius:6px;background:none;font-size:15px;color:var(--tx)}
+.wt button:hover{background:rgba(127,127,127,.25)}.wt button.x:hover{background:#d93b3b;color:#fff}
+.wb{flex:1;overflow:auto;padding:10px;user-select:text;-webkit-user-select:text}
+.wr{position:absolute;right:0;bottom:0;width:18px;height:18px;touch-action:none;background:linear-gradient(135deg,transparent 50%,rgba(127,127,127,.5) 50%)}
+#snap{position:absolute;background:rgba(255,138,31,.18);border:2px solid rgba(255,138,31,.7);border-radius:10px;display:none;pointer-events:none;z-index:8999}
+#ctx{position:fixed;z-index:9800;background:rgba(27,32,38,.98);border:1px solid #3a424d;border-radius:10px;padding:4px;min-width:200px;display:none;box-shadow:0 12px 30px rgba(0,0,0,.55);color:#eef1f4}
+#ctx button{display:flex;width:100%;gap:10px;align-items:center;text-align:left;background:none;border:0;border-radius:7px;padding:8px 10px;color:#eef1f4;font-size:13px}#ctx button:hover{background:rgba(255,138,31,.2)}#ctx hr{border:0;border-top:1px solid #3a424d;margin:4px}
+#cur{position:fixed;left:0;top:0;z-index:99999;pointer-events:none;display:none;will-change:transform}
+html.mouse #cur{display:block}
+.btn{background:var(--pan2);border:1px solid var(--ln);border-radius:8px;padding:7px 12px;color:var(--tx)}.btn.p{background:var(--ac);border-color:var(--ac);color:#111;font-weight:700}.btn.d{color:var(--bad)}
+.btn:hover{filter:brightness(1.12)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}
+.inp{background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:7px 10px;color:var(--tx);min-width:0}
+:root.light .inp{background:#fff}
+.note{font-size:12px;color:var(--mu);line-height:1.45}
+h4{margin:10px 0 6px;color:var(--ac);font-size:13px}
+table{border-collapse:collapse;width:100%}td,th{padding:5px 6px;border-bottom:1px solid var(--ln);text-align:left;font-size:13px}th{color:var(--mu);font-weight:600}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.calc{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.calc button{height:52px;border-radius:10px;border:1px solid var(--ln);background:var(--pan2);font-size:19px;color:var(--tx)}.calc .o{background:#33281c;color:var(--ac)}.calc .eq{background:var(--ac);color:#111;font-weight:800}
+.cdisp{background:var(--bg);border:1px solid var(--ln);border-radius:10px;padding:8px 12px;text-align:right;margin-bottom:8px}.cdisp .h{color:var(--mu);font-size:12px;min-height:16px}.cdisp .v{font-size:32px;font-weight:300;word-break:break-all}
+.nlist{width:190px;flex:none;border-right:1px solid var(--ln);overflow:auto}.nlist div{padding:8px 10px;border-bottom:1px solid var(--ln);font-size:13px}.nlist div.on{background:rgba(255,138,31,.16)}
+.ned{flex:1;display:flex;flex-direction:column;min-width:0}.ned textarea{flex:1;resize:none;border:0;outline:0;background:var(--bg);padding:12px;line-height:1.5;font-size:15px}
+:root.light .ned textarea{background:#fff}
+.accbar{display:flex;gap:3px;flex-wrap:wrap;padding:4px 6px;border-top:1px solid var(--ln);background:var(--pan2)}.accbar button{min-width:30px;height:28px;border-radius:6px;border:1px solid var(--ln);background:var(--pan);color:var(--tx)}
+.osk{display:flex;flex-direction:column;gap:5px}.osk .r{display:flex;gap:5px;justify-content:center}.osk button{flex:1;min-width:0;height:46px;border-radius:8px;border:1px solid var(--ln);background:var(--pan2);font-size:17px;color:var(--tx)}.osk button.w2{flex:1.6}.osk button.sp{flex:6}.osk button.on{background:var(--ac);color:#111}
+.kbd{display:inline-block;border:1px solid var(--ln);border-bottom-width:3px;border-radius:5px;padding:1px 6px;font-size:12px;background:var(--pan2);margin:1px}
+.seg{display:inline-flex;border:1px solid var(--ln);border-radius:9px;overflow:hidden}.seg button{border:0;background:var(--pan2);padding:7px 12px;color:var(--tx)}.seg button.on{background:var(--ac);color:#111;font-weight:700}
+.walls{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}.walls button{height:56px;border-radius:9px;border:2px solid transparent}.walls button.on{border-color:var(--ac)}
+iframe{border:0;width:100%;height:100%;background:#fff}
+.lock{position:fixed;inset:0;z-index:99990;background:var(--wall);background-size:cover;display:none;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.6)}.lock.on{display:flex}.lock .t{font-size:84px;font-weight:200}.lock .d{font-size:20px}.lock .h{margin-top:30px;opacity:.8;font-size:14px}
+#toast{position:fixed;left:50%;bottom:calc(var(--tb) + 14px);transform:translateX(-50%);background:rgba(20,23,27,.95);color:#fff;border:1px solid #3a424d;border-radius:10px;padding:8px 14px;font-size:13px;z-index:99000;display:none;max-width:90vw}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}.cal div{padding:6px 0;border-radius:6px;font-size:13px}.cal .h{color:var(--mu);font-size:11px}.cal .td{background:var(--ac);color:#111;font-weight:800}
+.chip{display:inline-block;background:var(--pan2);border:1px solid var(--ln);border-radius:20px;padding:3px 10px;font-size:12px;margin:2px}
+@media (max-width:640px){#clockw .t{font-size:40px}.nlist{width:120px}}
+</style>
+</head>
+<body>
+<div id="desk"><div id="icons"></div><div id="clockw"><div class="t" id="ct">--:--</div><div class="d" id="cd"></div><div class="w" id="cw"></div></div><div id="snap"></div></div>
+<div id="bar">
+ <button id="bStart" title="Démarrer (touche Windows ou Ctrl+Échap)">L</button>
+ <div id="pins"></div><div id="tasks"></div>
+ <div class="tray"><button id="bKb" title="Disposition du clavier (Alt+Maj pour changer)">FR</button><span id="tnet" title="Internet">●</span><span id="tbat"></span><div id="tclock"><div id="tt">--:--</div><div id="td" style="font-size:11px;opacity:.8"></div></div></div>
+</div>
+<div id="start"><div class="top"><div class="av" id="sav">M</div><input id="sq" placeholder="Rechercher une appli…" autocomplete="off"></div><div id="sgrid"></div>
+ <div class="bot"><button id="sSet">⚙ Paramètres</button><button id="sLock">🔒 Verrouiller</button><button id="sFull">⛶ Plein écran</button></div></div>
+<div id="ctx"></div>
+<div class="lock" id="lock"><div class="t" id="lt"></div><div class="d" id="ld"></div><div class="h">Clique, touche ou appuie sur une touche pour ouvrir</div></div>
+<div id="toast"></div>
+<svg id="cur" width="20" height="20" viewBox="0 0 20 20"></svg>
+<script>
+'use strict';
+/* ================== stockage ================== */
+var KEY='lushitab_v1';
+var D={name:'Michel',wall:0,theme:'dark',fs:14,layout:'auto',ptr:'petit',pcol:'blanc',dbl:400,osk:false,notes:[],rates:{USD:1,CDF:2850,ZMW:26.5,TZS:2650,ZAR:18.4,EUR:0.92},spread:1.5,caisse:[],apps:null,winpos:{},pins:['kalamu','plan']};
+try{var sv=JSON.parse(localStorage.getItem(KEY)||'null');if(sv)for(var k in sv)D[k]=sv[k];}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(D));}catch(e){toast('Mémoire pleine : exporte tes données (Paramètres)');}}
+var $=function(s,r){return (r||document).querySelector(s);},$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function toast(t,ms){var e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display='none';},ms||2600);}
+function fmtN(v,d){if(!isFinite(v))return '—';return Number(v).toLocaleString('fr-FR',{minimumFractionDigits:d==null?0:d,maximumFractionDigits:d==null?2:d});}
+var CAP=function(){try{return window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform()?(window.Capacitor.Plugins||{}):null;}catch(e){return null;}};
+
+/* ================== fonds d'écran & thème ================== */
+var WALLS=['linear-gradient(135deg,#0f2027,#203a43 50%,#2c5364)','linear-gradient(135deg,#1f1c2c,#928dab)','linear-gradient(135deg,#232526,#414345)','linear-gradient(135deg,#0b486b,#f56217)','linear-gradient(135deg,#134e5e,#71b280)','linear-gradient(135deg,#3a1c71,#d76d77 60%,#ffaf7b)','linear-gradient(160deg,#141e30,#243b55)','radial-gradient(circle at 30% 20%,#ff8a1f 0,#7a2e00 35%,#120c08 75%)'];
+function applyLook(){document.documentElement.style.setProperty('--wall',WALLS[D.wall]||WALLS[0]);document.documentElement.classList.toggle('light',D.theme==='light');document.documentElement.style.setProperty('--fs',(D.fs||14)+'px');$('#sav').textContent=(D.name||'M').charAt(0).toUpperCase();ptrShape();}
+
+/* ================== pointeur de souris petit et précis ================== */
+var PSZ={mini:12,petit:16,moyen:22,grand:30},PCOL={blanc:['#fff','#000'],noir:['#111','#fff'],orange:['#ff8a1f','#111'],jaune:['#ffe14d','#111']};
+var CUR={x:-50,y:-50,shape:'arrow',raf:0};
+function ptrShape(){var s=PSZ[D.ptr]||16,c=PCOL[D.pcol]||PCOL.blanc,svg=$('#cur');svg.setAttribute('width',s);svg.setAttribute('height',s);
+ var p={arrow:'<path d="M2 1.5v15.5l4.2-4 2.7 6 2.6-1.1-2.6-6h5.9z" fill="'+c[0]+'" stroke="'+c[1]+'" stroke-width="1.3" stroke-linejoin="round"/>',
+  hand:'<path d="M7 1.8c1 0 1.7.7 1.7 1.7v5.4l1-.2c.9-.1 1.7.4 1.9 1.2l.1.4 1-.2c.9-.1 1.7.4 1.9 1.3l.1.3.6-.1c1 0 1.8.7 1.8 1.7v2.8c0 2.2-1.8 4-4 4h-2.6c-1.3 0-2.6-.6-3.4-1.6l-3.3-4.2c-.6-.8-.4-1.9.4-2.4.7-.5 1.6-.4 2.2.2l.7.7V3.5c0-1 .8-1.7 1.8-1.7z" fill="'+c[0]+'" stroke="'+c[1]+'" stroke-width="1.2"/>',
+  text:'<path d="M7 2h6M7 18h6M10 2v16" stroke="'+c[1]+'" stroke-width="3" stroke-linecap="round"/><path d="M7 2h6M7 18h6M10 2v16" stroke="'+c[0]+'" stroke-width="1.4" stroke-linecap="round"/>',
+  move:'<path d="M10 1l3 3h-2v5h5V7l3 3-3 3v-2h-5v5h2l-3 3-3-3h2v-5H4v2l-3-3 3-3v2h5V4H7z" fill="'+c[0]+'" stroke="'+c[1]+'" stroke-width="1"/>',
+  resize:'<path d="M3 3h6L7 5l8 8 2-2v6h-6l2-2-8-8-2 2z" fill="'+c[0]+'" stroke="'+c[1]+'" stroke-width="1"/>'}[CUR.shape];
+ svg.innerHTML=p;CUR.off=CUR.shape==='arrow'?[1.5*s/20,1*s/20]:[s/2,s/2];}
+function shapeFor(el){if(!el||!el.closest)return 'arrow';if(el.closest('.wr'))return 'resize';if(el.closest('.wt')&&!el.closest('button'))return 'move';if(el.closest('textarea,input[type=text],input[type=number],input[type=search],input:not([type])'))return 'text';if(el.closest('button,a,.di,.sm,.tk,.nlist div,select,label,[data-click]'))return 'hand';return 'arrow';}
+function curMove(e){if(e.pointerType!=='mouse')return;if(!document.documentElement.classList.contains('mouse'))document.documentElement.classList.add('mouse');CUR.x=e.clientX;CUR.y=e.clientY;var sh=shapeFor(e.target);if(sh!==CUR.shape){CUR.shape=sh;ptrShape();}
+ if(!CUR.raf)CUR.raf=requestAnimationFrame(function(){CUR.raf=0;$('#cur').style.transform='translate('+(CUR.x-CUR.off[0])+'px,'+(CUR.y-CUR.off[1])+'px)';});}
+window.addEventListener('pointermove',curMove,{passive:true,capture:true});window.addEventListener('pointerdown',function(e){if(e.pointerType==='mouse')curMove(e);else document.documentElement.classList.remove('mouse');},{capture:true});
+document.addEventListener('mouseleave',function(){$('#cur').style.transform='translate(-50px,-50px)';});
+
+/* ================== dispositions de clavier ================== */
+var LAYOUTS={
+ auto:{n:'Système (comme Android)',s:'SYS'},
+ fr:{n:'AZERTY — France',s:'FR',m:{Backquote:['²',''],Digit1:['&','1'],Digit2:['é','2','~'],Digit3:['"','3','#'],Digit4:["'",'4','{'],Digit5:['(','5','['],Digit6:['-','6','|'],Digit7:['è','7','`'],Digit8:['_','8','\\'],Digit9:['ç','9','^'],Digit0:['à','0','@'],Minus:[')','°',']'],Equal:['=','+','}'],
+  KeyQ:['a','A'],KeyW:['z','Z'],KeyE:['e','E','€'],BracketLeft:['^','¨'],BracketRight:['$','£','¤'],KeyA:['q','Q'],Semicolon:['m','M'],Quote:['ù','%'],Backslash:['*','µ'],IntlBackslash:['<','>'],KeyZ:['w','W'],KeyM:[',','?'],Comma:[';','.'],Period:[':','/'],Slash:['!','§']}},
+ be:{n:'AZERTY — Belgique',s:'BE',m:{Backquote:['²','³'],Digit1:['&','1','|'],Digit2:['é','2','@'],Digit3:['"','3','#'],Digit4:["'",'4'],Digit5:['(','5'],Digit6:['§','6','^'],Digit7:['è','7'],Digit8:['!','8'],Digit9:['ç','9','{'],Digit0:['à','0','}'],Minus:[')','°'],Equal:['-','_'],
+  KeyQ:['a','A'],KeyW:['z','Z'],KeyE:['e','E','€'],BracketLeft:['^','¨','['],BracketRight:['$','*',']'],KeyA:['q','Q'],Semicolon:['m','M'],Quote:['ù','%','´'],Backslash:['µ','£','`'],IntlBackslash:['<','>','\\'],KeyZ:['w','W'],KeyM:[',','?'],Comma:[';','.'],Period:[':','/'],Slash:['=','+','~']}},
+ us:{n:'QWERTY — US / anglais',s:'US',m:{}},
+ intl:{n:'QWERTY — avec accents (AltGr)',s:'US+',m:{KeyE:['e','E','é'],KeyA:['a','A','à'],KeyQ:['q','Q','â'],KeyW:['w','W','è'],KeyR:['r','R','ê'],KeyU:['u','U','ù'],KeyI:['i','I','î'],KeyO:['o','O','ô'],KeyC:['c','C','ç'],KeyY:['y','Y','ë'],KeyT:['t','T','ï'],Digit5:['5','%','€']}},
+ de:{n:'QWERTZ — Allemagne / Suisse',s:'DE',m:{KeyY:['z','Z'],KeyZ:['y','Y'],Semicolon:['ö','Ö'],Quote:['ä','Ä'],BracketLeft:['ü','Ü'],Minus:['ß','?','\\'],Digit2:['2','"','²'],Digit3:['3','§','³'],Digit6:['6','&'],Digit7:['7','/','{'],Digit8:['8','(','['],Digit9:['9',')',']'],Digit0:['0','=','}'],KeyQ:['q','Q','@'],KeyE:['e','E','€'],Comma:[',',';'],Period:['.',':'],Slash:['-','_'],BracketRight:['+','*','~']}}};
+var LORD=['auto','fr','be','us','intl','de'];
+function layoutBadge(){$('#bKb').textContent=(LAYOUTS[D.layout]||LAYOUTS.auto).s;}
+function cycleLayout(){var i=LORD.indexOf(D.layout);D.layout=LORD[(i+1)%LORD.length];save();layoutBadge();toast('Clavier : '+LAYOUTS[D.layout].n);rfSettings();}
+function insertText(el,t){if(!el)return;if(typeof el.setRangeText==='function'&&el.selectionStart!=null){var a=el.selectionStart,b=el.selectionEnd;el.setRangeText(t,a,b,'end');}else el.value+=t;el.dispatchEvent(new Event('input',{bubbles:true}));}
+document.addEventListener('keydown',function(e){
+ var t=e.target,ed=t&&(t.tagName==='TEXTAREA'||(t.tagName==='INPUT'&&/^(text|search|)$/.test(t.type||'')));
+ if(e.altKey&&e.shiftKey&&!e.ctrlKey){e.preventDefault();cycleLayout();return;}
+ if(ed&&D.layout!=='auto'&&LAYOUTS[D.layout]&&LAYOUTS[D.layout].m){var ag=(e.getModifierState&&e.getModifierState('AltGraph'))||(e.ctrlKey&&e.altKey);if((e.ctrlKey||e.altKey||e.metaKey)&&!ag)return;
+  var m=LAYOUTS[D.layout].m[e.code];if(m){var ch=ag?m[2]:(e.shiftKey?m[1]:m[0]);if(ch){e.preventDefault();insertText(t,ch);return;}if(ag)return;}
+  else if(/^Key[A-Z]$/.test(e.code)&&!ag&&e.key&&e.key.length===1){var L=e.code.slice(3).toLowerCase(),up=e.shiftKey!==(e.getModifierState&&e.getModifierState('CapsLock'));if(e.key.toLowerCase()!==L){e.preventDefault();insertText(t,up?L.toUpperCase():L);return;}}}
+ globalKeys(e,ed);},true);
+
+/* ================== applications ================== */
+var GH='https://micheltshiepela331-gif.github.io/';
+var APPS=[
+ {id:'notes',n:'Bloc-notes',ic:'📝',c:'#2f6fed',sec:'Bureau'},{id:'calc',n:'Calculatrice',ic:'🧮',c:'#4c5563',sec:'Bureau'},{id:'osk',n:'Clavier à l\'écran',ic:'⌨️',c:'#6b4fd8',sec:'Bureau'},{id:'agenda',n:'Calendrier',ic:'📅',c:'#d9534f',sec:'Bureau'},
+ {id:'change',n:'Change USD/CDF',ic:'💱',c:'#1d9a6c',sec:'Shop'},{id:'caisse',n:'Caisse du jour',ic:'💵',c:'#2e8b57',sec:'Shop'},
+ {id:'kalamu',n:'Kalamu',ic:'📄',c:'#2b579a',sec:'LushiPratique',url:GH+'KALAMU/'},{id:'plan',n:'Lushi Plan',ic:'📐',c:'#ff8a1f',sec:'LushiPratique',url:GH+'lushi-plan/'},{id:'shop',n:'Shop Rédemption',ic:'🏪',c:'#b5651d',sec:'LushiPratique',url:GH+'shop-redemption/'},{id:'site',n:'LushiPratique',ic:'🌐',c:'#e0701b',sec:'LushiPratique',url:GH},
+ {id:'web',n:'Internet',ic:'🔎',c:'#1a73e8',sec:'Bureau'},{id:'set',n:'Paramètres',ic:'⚙️',c:'#555e6b',sec:'Système'},{id:'help',n:'Aide',ic:'❓',c:'#3b7dd8',sec:'Système'}];
+var DEF_ANDROID=[{n:'WhatsApp',pkg:'com.whatsapp',ic:'💬',c:'#25d366'},{n:'YouTube',pkg:'com.google.android.youtube',ic:'▶️',c:'#e62117'},{n:'Chrome',pkg:'com.android.chrome',ic:'🌍',c:'#1a73e8'},{n:'Gmail',pkg:'com.google.android.gm',ic:'✉️',c:'#d93025'},{n:'Play Store',pkg:'com.android.vending',ic:'🛍️',c:'#01875f'},{n:'Photos',pkg:'com.google.android.apps.photos',ic:'🖼️',c:'#f4b400'},{n:'Paramètres Android',pkg:'com.android.settings',ic:'🔧',c:'#5f6368'},{n:'Facebook',pkg:'com.facebook.katana',ic:'📘',c:'#1877f2'}];
+if(!D.apps)D.apps=DEF_ANDROID.slice();
+function allApps(){return APPS.concat(D.apps.map(function(a,i){return {id:'and'+i,n:a.n,ic:a.ic||'📱',c:a.c||'#444',sec:'Applis Android',pkg:a.pkg};}));}
+function findApp(id){var L=allApps();for(var i=0;i<L.length;i++)if(L[i].id===id)return L[i];return null;}
+function launch(id){var a=findApp(id);if(!a)return;closeStart();
+ if(a.pkg){var P=CAP();if(P&&P.AppLauncher){P.AppLauncher.openUrl({url:a.pkg}).then(function(r){if(r&&r.completed===false)toast(a.n+' n\'est pas installée sur cette tablette');}).catch(function(){toast('Impossible d\'ouvrir '+a.n);});}else{location.href='intent://#Intent;package='+a.pkg+';end';setTimeout(function(){toast('Pour ouvrir les applis Android, installe Lushi Tab en APK');},900);}return;}
+ if(a.url){openWin(a.id,a.n,a.ic,function(b){b.style.padding='0';b.innerHTML='<iframe src="'+a.url+'" allow="fullscreen; clipboard-read; clipboard-write" referrerpolicy="no-referrer"></iframe>';},{w:Math.min(1100,innerWidth-40),h:innerHeight-120,tools:'<button data-ext="'+a.url+'" title="Ouvrir dans le navigateur">↗</button>'});return;}
+ var f=APPF[a.id];if(f)f(a);}
+
+/* ================== fenêtres ================== */
+var WINS=[],ZT=10;
+function openWin(id,title,ic,fill,o){o=o||{};var ex=WINS.filter(function(w){return w.id===id;})[0];if(ex&&!o.multi){ex.el.classList.remove('hid');focusWin(ex);return ex;}
+ var el=document.createElement('div');el.className='win';var small=innerWidth<700||innerHeight<480,W=Math.min(o.w||560,innerWidth-16),H=Math.min(o.h||420,innerHeight-60),pos=D.winpos[id];
+ var x=pos?pos[0]:Math.max(8,(innerWidth-W)/2+((WINS.length%5)-2)*26),y=pos?pos[1]:Math.max(8,(innerHeight-60-H)/2+((WINS.length%5)-2)*22);if(pos&&pos[2]){W=Math.min(pos[2],innerWidth-8);H=Math.min(pos[3],innerHeight-60);}
+ x=Math.max(0,Math.min(x,innerWidth-120));y=Math.max(0,Math.min(y,innerHeight-100));
+ el.style.cssText='left:'+x+'px;top:'+y+'px;width:'+W+'px;height:'+H+'px';
+ el.innerHTML='<div class="wt"><span>'+ic+'</span><span class="ti">'+esc(title)+'</span>'+(o.tools||'')+'<button data-a="min" title="Réduire">—</button><button data-a="max" title="Agrandir">▢</button><button class="x" data-a="x" title="Fermer (Ctrl+W)">✕</button></div><div class="wb"></div><div class="wr"></div>';
+ $('#desk').appendChild(el);var w={id:id,title:title,ic:ic,el:el};WINS.push(w);if(small||o.max)el.classList.add('max');
+ el.addEventListener('pointerdown',function(){focusWin(w);},true);
+ $$('.wt [data-a]',el).forEach(function(b){b.onclick=function(e){e.stopPropagation();var a=b.dataset.a;if(a==='x')closeWin(w);else if(a==='min')minWin(w);else toggleMax(w);};});
+ $$('.wt [data-ext]',el).forEach(function(b){b.onclick=function(e){e.stopPropagation();extOpen(b.dataset.ext);};});
+ dragWin(w);fill($('.wb',el),w);focusWin(w);taskbar();return w;}
+function focusWin(w){var ae=document.activeElement;if(ae&&ae!==document.body&&!w.el.contains(ae)&&ae.blur)ae.blur();WINS.forEach(function(x){x.el.classList.toggle('act',x===w);});w.el.style.zIndex=++ZT;w.el.classList.remove('hid');taskbar();}
+function closeWin(w){if(w.onclose)try{w.onclose();}catch(e){}w.el.remove();WINS=WINS.filter(function(x){return x!==w;});var t=topWin();if(t)focusWin(t);taskbar();}
+function minWin(w){w.el.classList.add('hid');w.el.classList.remove('act');var t=topWin();if(t)focusWin(t);taskbar();}
+function toggleMax(w){w.el.classList.toggle('max');}
+function topWin(){var v=WINS.filter(function(x){return !x.el.classList.contains('hid');});v.sort(function(a,b){return (+b.el.style.zIndex)-(+a.el.style.zIndex);});return v[0];}
+function remember(w){if(w.el.classList.contains('max'))return;D.winpos[w.id]=[w.el.offsetLeft,w.el.offsetTop,w.el.offsetWidth,w.el.offsetHeight];save();}
+function dragWin(w){var el=w.el,t=$('.wt',el),r=$('.wr',el),st=null,lastTap=0;
+ t.addEventListener('pointerdown',function(e){if(e.target.closest('button'))return;var now=Date.now();if(now-lastTap<(D.dbl||400)){toggleMax(w);lastTap=0;return;}lastTap=now;if(el.classList.contains('max'))return;st={x:e.clientX,y:e.clientY,l:el.offsetLeft,t:el.offsetTop,m:'move'};try{t.setPointerCapture(e.pointerId);}catch(_){}});
+ r.addEventListener('pointerdown',function(e){e.stopPropagation();st={x:e.clientX,y:e.clientY,w:el.offsetWidth,h:el.offsetHeight,m:'size'};try{r.setPointerCapture(e.pointerId);}catch(_){}});
+ var mv=function(e){if(!st)return;var dx=e.clientX-st.x,dy=e.clientY-st.y,S2=$('#snap');if(st.m==='move'){var L=Math.max(-el.offsetWidth+80,Math.min(innerWidth-80,st.l+dx)),T=Math.max(0,Math.min(innerHeight-90,st.t+dy));el.style.left=L+'px';el.style.top=T+'px';
+   var z=e.clientX<6?'l':e.clientX>innerWidth-6?'r':e.clientY<4?'t':'';st.z=z;var dh=innerHeight-parseInt(getComputedStyle(document.documentElement).getPropertyValue('--tb'));if(z){S2.style.display='block';S2.style.left=(z==='r'?innerWidth/2:0)+'px';S2.style.top='0';S2.style.width=(z==='t'?innerWidth:innerWidth/2)+'px';S2.style.height=dh+'px';}else S2.style.display='none';}
+  else{el.style.width=Math.max(260,st.w+dx)+'px';el.style.height=Math.max(170,st.h+dy)+'px';}};
+ var up=function(){if(!st)return;var S2=$('#snap');S2.style.display='none';if(st.z==='t')el.classList.add('max');else if(st.z){var dh=innerHeight-parseInt(getComputedStyle(document.documentElement).getPropertyValue('--tb'));el.style.left=(st.z==='r'?innerWidth/2:0)+'px';el.style.top='0';el.style.width=innerWidth/2+'px';el.style.height=dh+'px';}st=null;remember(w);};
+ [t,r].forEach(function(x){x.addEventListener('pointermove',mv);x.addEventListener('pointerup',up);x.addEventListener('pointercancel',up);});}
+
+function pinsBar(){var b=$('#pins');if(!b)return;b.innerHTML='';(D.pins||[]).forEach(function(id){var a=findApp(id);if(!a)return;var run=WINS.some(function(w){return w.id===id;}),k=document.createElement('button');k.className='pin'+(run?' run':'');k.title=a.n;k.innerHTML='<div class="ic" style="background:'+a.c+'">'+a.ic+'</div>';
+ k.onclick=function(){var w=WINS.filter(function(x){return x.id===id;})[0];if(w){if(w.el.classList.contains('hid')||w!==topWin())focusWin(w);else minWin(w);}else launch(id);};
+ k.oncontextmenu=function(e){e.preventDefault();ctx(e.clientX,e.clientY-90,[['▶ Ouvrir '+a.n,function(){launch(id);}],['📌 Détacher de la barre des tâches',function(){togglePin(id);}]]);};
+ var lt;k.addEventListener('pointerdown',function(e){if(e.pointerType==='mouse')return;lt=setTimeout(function(){k.oncontextmenu({preventDefault:function(){},clientX:e.clientX,clientY:e.clientY});},650);});['pointerup','pointercancel','pointerleave'].forEach(function(t){k.addEventListener(t,function(){clearTimeout(lt);});});b.appendChild(k);});
+ b.style.display=(D.pins||[]).length?'flex':'none';}
+function togglePin(id){D.pins=D.pins||[];var i=D.pins.indexOf(id);if(i>=0)D.pins.splice(i,1);else D.pins.push(id);save();pinsBar();var a=findApp(id);toast((i>=0?'Détaché : ':'Épinglé dans la barre des tâches : ')+(a?a.n:id));}
+function taskbar(){pinsBar();var b=$('#tasks');b.innerHTML='';var act=topWin();WINS.forEach(function(w){if((D.pins||[]).indexOf(w.id)>=0)return;var k=document.createElement('button');k.className='tk'+(w===act&&!w.el.classList.contains('hid')?' on':'')+(w.el.classList.contains('hid')?' min':'');k.innerHTML='<span>'+w.ic+'</span><span>'+esc(w.title)+'</span>';
+  k.onclick=function(){if(w.el.classList.contains('hid'))focusWin(w);else if(w===act)minWin(w);else focusWin(w);};k.oncontextmenu=function(e){e.preventDefault();ctx(e.clientX,e.clientY,[['✕ Fermer',function(){closeWin(w);}],['▢ Agrandir / restaurer',function(){focusWin(w);toggleMax(w);}]]);};b.appendChild(k);});}
+function extOpen(u){var P=CAP();if(P&&P.Browser&&P.Browser.open){P.Browser.open({url:u});return;}window.open(u,'_blank');}
+
+/* ================== bureau, démarrer, menu contextuel ================== */
+function desktop(){var c=$('#icons');c.innerHTML='';var L=['notes','calc','change','caisse','plan','kalamu','shop','web','set'];allApps().filter(function(a){return L.indexOf(a.id)>=0||a.pkg==='com.whatsapp';}).forEach(function(a){var d=document.createElement('div');d.className='di';d.innerHTML='<div class="ic" style="background:'+a.c+'">'+a.ic+'</div><span>'+esc(a.n)+'</span>';
+ var lt=0;d.addEventListener('pointerdown',function(e){$$('.di').forEach(function(x){x.classList.remove('sel');});d.classList.add('sel');if(e.pointerType!=='mouse'){return;}var n=Date.now();if(n-lt<(D.dbl||400)){launch(a.id);lt=0;}else lt=n;});
+ d.addEventListener('click',function(e){if(e.pointerType==='mouse'||(e.detail&&lastPT==='mouse'))return;launch(a.id);});d.addEventListener('contextmenu',function(e){e.preventDefault();e.stopPropagation();var on=(D.pins||[]).indexOf(a.id)>=0;ctx(e.clientX,e.clientY,[['▶ Ouvrir',function(){launch(a.id);}],[on?'📌 Détacher de la barre des tâches':'📌 Épingler à la barre des tâches',function(){togglePin(a.id);}]]);});c.appendChild(d);});}
+var lastPT='touch';window.addEventListener('pointerdown',function(e){lastPT=e.pointerType;},true);
+function renderStart(q){q=(q||'').toLowerCase();var g=$('#sgrid'),secs={};allApps().forEach(function(a){if(q&&a.n.toLowerCase().indexOf(q)<0)return;(secs[a.sec]=secs[a.sec]||[]).push(a);});var h='';
+ ['Bureau','Shop','LushiPratique','Applis Android','Système'].forEach(function(s){if(!secs[s])return;h+='<h6>'+s+'</h6>'+secs[s].map(function(a){return '<button class="sm" data-id="'+a.id+'"><div class="ic" style="background:'+a.c+'">'+a.ic+'</div>'+esc(a.n)+'</button>';}).join('');});
+ if(q)h+='<h6>Internet</h6><button class="sm" data-web="1"><div class="ic" style="background:#1a73e8">🔎</div>Chercher « '+esc(q)+' »</button>';g.innerHTML=h||'<div class="note" style="padding:10px">Rien trouvé</div>';
+ $$('[data-id]',g).forEach(function(b){b.onclick=function(){launch(b.dataset.id);};b.oncontextmenu=function(e){e.preventDefault();var id=b.dataset.id,on=(D.pins||[]).indexOf(id)>=0;ctx(e.clientX,e.clientY,[['▶ Ouvrir',function(){launch(id);}],[on?'📌 Détacher de la barre des tâches':'📌 Épingler à la barre des tâches',function(){togglePin(id);}]]);};});var wb=$('[data-web]',g);if(wb)wb.onclick=function(){closeStart();extOpen('https://www.google.com/search?q='+encodeURIComponent(q));};SKI=-1;}
+var SKI=-1;
+function openStart(){$('#start').classList.add('on');$('#bStart').classList.add('on');$('#sq').value='';renderStart('');setTimeout(function(){if(lastPT==='mouse'||HASKB)$('#sq').focus();},30);}
+function closeStart(){$('#start').classList.remove('on');$('#bStart').classList.remove('on');}
+$('#bStart').onclick=function(){$('#start').classList.contains('on')?closeStart():openStart();};
+$('#sq').addEventListener('input',function(e){renderStart(e.target.value);});
+$('#sq').addEventListener('keydown',function(e){var b=$$('#sgrid .sm');if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();SKI=Math.min(b.length-1,SKI+1);}else if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();SKI=Math.max(0,SKI-1);}else if(e.key==='Enter'){e.preventDefault();(b[Math.max(0,SKI)]||{click:function(){}}).click();return;}else return;b.forEach(function(x,i){x.classList.toggle('kb',i===SKI);});});
+$('#sSet').onclick=function(){launch('set');};$('#sLock').onclick=function(){closeStart();lockOn();};$('#sFull').onclick=function(){closeStart();try{var q=document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();if(q&&q.catch)q.catch(function(){toast('Plein écran refusé ici');});}catch(e){toast('Plein écran non disponible');}};
+document.addEventListener('pointerdown',function(e){if(!e.target.closest('#start')&&!e.target.closest('#bStart'))closeStart();if(!e.target.closest('#ctx'))$('#ctx').style.display='none';});
+function ctx(x,y,items){var c=$('#ctx');c.innerHTML='';items.forEach(function(it){if(it==='-'){c.appendChild(document.createElement('hr'));return;}var b=document.createElement('button');b.textContent=it[0];b.onclick=function(){c.style.display='none';it[1]();};c.appendChild(b);});c.style.display='block';c.style.left=Math.min(x,innerWidth-c.offsetWidth-6)+'px';c.style.top=Math.min(y,innerHeight-c.offsetHeight-6)+'px';}
+$('#desk').addEventListener('contextmenu',function(e){if(e.target.closest('.win'))return;e.preventDefault();ctx(e.clientX,e.clientY,[['📝 Nouvelle note',function(){launch('notes');setTimeout(function(){newNote();},50);}],['🧮 Calculatrice',function(){launch('calc');}],'-',['🖼 Changer le fond d\'écran',function(){D.wall=(D.wall+1)%WALLS.length;save();applyLook();}],['⚙ Paramètres',function(){launch('set');}],['🔄 Actualiser',function(){location.reload();}]]);});
+var lp=null;$('#desk').addEventListener('pointerdown',function(e){if(e.pointerType==='mouse'||e.target.closest('.win,.di'))return;var x=e.clientX,y=e.clientY;lp=setTimeout(function(){$('#desk').dispatchEvent(new MouseEvent('contextmenu',{clientX:x,clientY:y,bubbles:true}));},650);});['pointerup','pointermove','pointercancel'].forEach(function(t){$('#desk').addEventListener(t,function(){clearTimeout(lp);});});
+
+/* ================== raccourcis clavier (comme sur PC) ================== */
+var HASKB=false;
+function globalKeys(e,ed){HASKB=true;var k=e.key;
+ if(k==='Meta'||k==='OS'||(e.ctrlKey&&k==='Escape')){e.preventDefault();$('#start').classList.contains('on')?closeStart():openStart();return;}
+ if(k==='Escape'){if($('#ctx').style.display==='block'){$('#ctx').style.display='none';return;}if($('#start').classList.contains('on')){closeStart();return;}}
+ if(e.altKey&&k==='Tab'){e.preventDefault();if(!WINS.length)return;var v=WINS.slice().sort(function(a,b){return (+b.el.style.zIndex)-(+a.el.style.zIndex);});focusWin(v[v.length>1?1:0]);return;}
+ if(e.ctrlKey&&(k==='w'||k==='W')){var t=topWin();if(t){e.preventDefault();closeWin(t);}return;}
+ if(e.ctrlKey&&e.altKey&&(k==='l'||k==='L')){e.preventDefault();lockOn();return;}
+ if(e.ctrlKey&&e.altKey&&(k==='t'||k==='T')){e.preventDefault();launch('notes');return;}
+ if(e.key==='F11'){e.preventDefault();$('#sFull').click();return;}
+ if(!ed&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&k.length===1&&!$('#start').classList.contains('on')&&!topWin()&&!$('#lock').classList.contains('on')){openStart();}}
+
+/* ================== verrouillage, horloge, batterie, météo ================== */
+function lockOn(){$('#lock').classList.add('on');tick();}
+$('#lock').addEventListener('pointerdown',function(){$('#lock').classList.remove('on');});document.addEventListener('keydown',function(e){if($('#lock').classList.contains('on')){e.preventDefault();$('#lock').classList.remove('on');}},true);
+var JOURS=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+function tick(){var d=new Date(),hm=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2),dt=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});$('#ct').textContent=hm;$('#cd').textContent=dt.charAt(0).toUpperCase()+dt.slice(1);$('#tt').textContent=hm;$('#td').textContent=d.toLocaleDateString('fr-FR');$('#lt').textContent=hm;$('#ld').textContent=$('#cd').textContent;
+ $('#tnet').style.color=navigator.onLine?'#3ccf7a':'#ff5b5b';$('#tnet').title=navigator.onLine?'Internet connecté':'Hors ligne';}
+setInterval(tick,5000);
+try{if(navigator.getBattery)navigator.getBattery().then(function(b){var u=function(){$('#tbat').textContent=(b.charging?'⚡':'🔋')+Math.round(b.level*100)+'%';};u();b.addEventListener('levelchange',u);b.addEventListener('chargingchange',u);});}catch(e){}
+function weather(){var c=null;try{c=JSON.parse(localStorage.getItem('lushitab_meteo')||'null');}catch(e){}var show=function(w){if(!w)return;var ic=w.c<=1?'☀️':w.c<=3?'⛅':w.c<=48?'🌫':w.c<=67?'🌧':w.c<=82?'🌦':'⛈';$('#cw').textContent=ic+' '+Math.round(w.t)+'°C · Lubumbashi';};show(c&&c.w);
+ if(!navigator.onLine||(c&&Date.now()-c.at<30*60000))return;fetch('https://api.open-meteo.com/v1/forecast?latitude=-11.66&longitude=27.48&current=temperature_2m,weather_code&timezone=auto').then(function(r){return r.json();}).then(function(j){var w={t:j.current.temperature_2m,c:j.current.weather_code};show(w);try{localStorage.setItem('lushitab_meteo',JSON.stringify({at:Date.now(),w:w}));}catch(e){}}).catch(function(){});}
+$('#tclock').onclick=function(){launch('agenda');};$('#bKb').onclick=function(){cycleLayout();};$('#bKb').oncontextmenu=function(e){e.preventDefault();launch('set');};
+
+/* ================== les applis intégrées ================== */
+var APPF={};
+var ACC=['é','è','ê','à','â','ç','ù','û','î','ï','ô','ë','œ','É','È','À','Ç','«','»','€','°','…'];
+function accBar(ta){var d=document.createElement('div');d.className='accbar';d.innerHTML=ACC.map(function(c){return '<button tabindex="-1">'+c+'</button>';}).join('');$$('button',d).forEach(function(b){b.addEventListener('pointerdown',function(e){e.preventDefault();insertText(ta,b.textContent);ta.focus();});});return d;}
+/* Bloc-notes */
+var NW=null,NCUR=0;
+function newNote(){D.notes.unshift({t:'',at:Date.now()});NCUR=0;save();if(NW)NW.render();}
+APPF.notes=function(){NW=openWin('notes','Bloc-notes','📝',function(b,w){b.style.cssText='padding:0;display:flex;overflow:hidden';
+ w.render=function(){if(!D.notes.length)D.notes.push({t:'',at:Date.now()});NCUR=Math.min(NCUR,D.notes.length-1);
+  b.innerHTML='<div class="nlist"></div><div class="ned"><div class="row" style="padding:6px 8px;margin:0;border-bottom:1px solid var(--ln)"><button class="btn p" data-n="new">＋ Nouvelle</button><button class="btn" data-n="copy">Copier</button><button class="btn" data-n="wa">WhatsApp</button><button class="btn d" data-n="del">🗑</button><span class="note" data-n="cnt" style="margin-left:auto"></span></div><textarea spellcheck="true" placeholder="Écris ici… (clavier : '+esc(LAYOUTS[D.layout].n)+')"></textarea></div>';
+  var L=$('.nlist',b),ta=$('textarea',b),cnt=$('[data-n=cnt]',b);D.notes.forEach(function(n,i){var d=document.createElement('div');d.className=i===NCUR?'on':'';d.setAttribute('data-click','1');d.textContent=(n.t.split('\n')[0]||'Nouvelle note').slice(0,40);d.onclick=function(){NCUR=i;w.render();};L.appendChild(d);});
+  ta.value=D.notes[NCUR].t;var up=function(){cnt.textContent=ta.value.trim()?ta.value.trim().split(/\s+/).length+' mots':'';};up();
+  ta.addEventListener('input',function(){D.notes[NCUR].t=ta.value;D.notes[NCUR].at=Date.now();save();up();var f=L.children[NCUR];if(f)f.textContent=(ta.value.split('\n')[0]||'Nouvelle note').slice(0,40);});
+  $('.ned',b).appendChild(accBar(ta));
+  $('[data-n=new]',b).onclick=function(){newNote();};$('[data-n=copy]',b).onclick=function(){copyT(ta.value);};$('[data-n=wa]',b).onclick=function(){extOpen('https://wa.me/?text='+encodeURIComponent(ta.value));};
+  $('[data-n=del]',b).onclick=function(){if(!confirm('Effacer cette note ?'))return;D.notes.splice(NCUR,1);save();w.render();};
+  if(lastPT==='mouse'||HASKB)setTimeout(function(){ta.focus();},30);LASTED=ta;};w.render();},{w:760,h:480});};
+function copyT(t){try{navigator.clipboard.writeText(t).then(function(){toast('Copié');},function(){fb();});}catch(e){fb();}function fb(){var x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();try{document.execCommand('copy');toast('Copié');}catch(_){toast('Copie impossible');}x.remove();}}
+/* Calculatrice */
+APPF.calc=function(){openWin('calc','Calculatrice','🧮',function(b,w){var ex='',hist='';b.innerHTML='<div class="cdisp"><div class="h"></div><div class="v">0</div></div><div class="calc"></div><div class="note" style="margin-top:6px">Clavier : chiffres, + − * /, Entrée = résultat, Échap = effacer, % = pourcentage.</div>';
+ var K=['C','⌫','%','÷','7','8','9','×','4','5','6','−','1','2','3','+','±','0',',','='],g=$('.calc',b);K.forEach(function(k){var x=document.createElement('button');x.textContent=k;if('÷×−+'.indexOf(k)>=0)x.className='o';if(k==='=')x.className='eq';x.onclick=function(){press(k);};g.appendChild(x);});
+ function show(){$('.v',b).textContent=ex===''?'0':ex.replace(/\*/g,'×').replace(/\//g,'÷').replace(/-/g,'−').replace(/\./g,',');$('.h',b).textContent=hist;}
+ function evalE(s){if(!/^[\d+\-*/().%\s]+$/.test(s))throw 0;s=s.replace(/(\d+(?:\.\d+)?)%/g,'($1/100)');return Function('"use strict";return ('+s+')')();}
+ function press(k){if(k==='C'){ex='';hist='';}else if(k==='⌫')ex=ex.slice(0,-1);else if(k==='='){try{var r=evalE(ex);hist=ex.replace(/\./g,',')+' =';ex=String(Math.round(r*1e10)/1e10);}catch(e){hist='Erreur';}}else if(k==='±'){ex=ex?(ex.charAt(0)==='-'?ex.slice(1):'-'+ex):'';}else ex+=({'÷':'/','×':'*','−':'-',',':'.'}[k]||k);show();}
+ w.key=function(e){var m={'Enter':'=','=':'=','Escape':'C','Backspace':'⌫','*':'×','/':'÷','-':'−','+':'+',',':',','.':',','%':'%'};var k=m[e.key]||(/^\d$/.test(e.key)?e.key:null);if(k){e.preventDefault();press(k);}};show();},{w:340,h:470});};
+/* Clavier à l'écran AZERTY */
+var LASTED=null;document.addEventListener('focusin',function(e){var t=e.target;if(t&&(t.tagName==='TEXTAREA'||(t.tagName==='INPUT'&&/^(text|search|number|)$/.test(t.type||''))))LASTED=t;});
+APPF.osk=function(){openWin('osk','Clavier à l\'écran — AZERTY','⌨️',function(b){var shift=false,num=false;
+ var R1='azertyuiop',R2='qsdfghjklm',R3='wxcvbn',N1='1234567890',N2='@#€&-+()/',N3='*"\':;!?';
+ function draw(){var rows=num?[N1.split(''),N2.split(''),N3.split('')]:[R1.split(''),R2.split(''),R3.split('').concat(["'"])];var h='<div class="osk">';rows.forEach(function(r,i){h+='<div class="r">'+(i===2?'<button class="w2'+(shift?' on':'')+'" data-k="SHIFT">⇧</button>':'')+r.map(function(c){var v=shift?c.toUpperCase():c;return '<button data-k="'+esc(v)+'">'+esc(v)+'</button>';}).join('')+(i===2?'<button class="w2" data-k="BK">⌫</button>':'')+'</div>';});
+  h+='<div class="r"><button class="w2" data-k="NUM">'+(num?'ABC':'?123')+'</button><button data-k="é">é</button><button data-k="è">è</button><button data-k="à">à</button><button class="sp" data-k=" ">espace</button><button data-k="ç">ç</button><button data-k=",">,</button><button data-k=".">.</button><button class="w2" data-k="EN">↵</button></div></div><div class="note" style="margin-top:6px">Le texte va dans la dernière zone où tu as cliqué'+(LASTED?'':' (clique d\'abord dans une note)')+'.</div>';b.innerHTML=h;
+  $$('[data-k]',b).forEach(function(x){x.addEventListener('pointerdown',function(e){e.preventDefault();var k=x.dataset.k,t=LASTED;if(k==='SHIFT'){shift=!shift;draw();return;}if(k==='NUM'){num=!num;draw();return;}if(!t){toast('Clique d\'abord dans une zone de texte');return;}
+   if(k==='BK'){var a=t.selectionStart,z=t.selectionEnd;if(a===z&&a>0)t.setRangeText('',a-1,a,'end');else t.setRangeText('',a,z,'end');t.dispatchEvent(new Event('input',{bubbles:true}));}else insertText(t,k==='EN'?'\n':k);if(shift&&k.length===1){shift=false;draw();}});});}draw();},{w:640,h:320});};
+/* Calendrier */
+APPF.agenda=function(){openWin('agenda','Calendrier','📅',function(b){var d=new Date(),y=d.getFullYear(),m=d.getMonth();function draw(){var f=new Date(y,m,1),st=(f.getDay()+6)%7,n=new Date(y,m+1,0).getDate(),h='<div class="row"><button class="btn" data-m="-1">◀</button><b style="flex:1;text-align:center">'+f.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})+'</b><button class="btn" data-m="1">▶</button></div><div class="cal">'+['L','M','M','J','V','S','D'].map(function(x){return '<div class="h">'+x+'</div>';}).join('');for(var i=0;i<st;i++)h+='<div></div>';var t=new Date();for(var j=1;j<=n;j++)h+='<div class="'+(j===t.getDate()&&m===t.getMonth()&&y===t.getFullYear()?'td':'')+'">'+j+'</div>';b.innerHTML=h+'</div>';$$('[data-m]',b).forEach(function(x){x.onclick=function(){m+=+x.dataset.m;if(m<0){m=11;y--;}if(m>11){m=0;y++;}draw();};});}draw();},{w:330,h:340});};
+/* Change */
+var CUR3={USD:'Dollar US',CDF:'Franc congolais',ZMW:'Kwacha zambien',TZS:'Shilling tanzanien',ZAR:'Rand sud-africain',EUR:'Euro'};
+APPF.change=function(){openWin('change','Change','💱',function(b){function draw(){var o=Object.keys(CUR3).map(function(c){return '<option value="'+c+'">'+c+' — '+CUR3[c]+'</option>';}).join('');
+ b.innerHTML='<div class="row"><input class="inp" id="cv" type="text" inputmode="decimal" value="100" style="width:120px"><select class="inp" id="cf">'+o+'</select><span>→</span><select class="inp" id="ct2">'+o+'</select></div><div style="font-size:26px;font-weight:300;margin:8px 0" id="cr">—</div><div class="note" id="cn"></div>'
+  +'<h4>Taux du jour (pour 1 USD)</h4><table>'+Object.keys(CUR3).filter(function(c){return c!=='USD';}).map(function(c){return '<tr><td>1 USD =</td><td><input class="inp" data-r="'+c+'" type="text" inputmode="decimal" value="'+D.rates[c]+'" style="width:110px"></td><td>'+c+'</td></tr>';}).join('')+'</table><div class="row"><span>Marge achat / vente :</span><input class="inp" id="csp" type="text" inputmode="decimal" value="'+D.spread+'" style="width:70px"><span>%</span></div>';
+ $('#cf',b).value='USD';$('#ct2',b).value='CDF';var calc=function(){var v=parseFloat(String($('#cv',b).value).replace(',','.')),f=$('#cf',b).value,t=$('#ct2',b).value,r=v/D.rates[f]*D.rates[t],sp=(+D.spread||0)/100;$('#cr',b).textContent=fmtN(r,t==='CDF'||t==='TZS'?0:2)+' '+t;$('#cn',b).textContent='Je vends : '+fmtN(r*(1+sp),t==='CDF'||t==='TZS'?0:2)+' '+t+'  ·  J\'achète : '+fmtN(r*(1-sp),t==='CDF'||t==='TZS'?0:2)+' '+t;};
+ ['#cv','#cf','#ct2'].forEach(function(s){$(s,b).addEventListener('input',calc);$(s,b).addEventListener('change',calc);});$$('[data-r]',b).forEach(function(x){x.addEventListener('change',function(){var v=parseFloat(String(x.value).replace(',','.'));if(v>0){D.rates[x.dataset.r]=v;save();calc();toast('Taux enregistré');}});});$('#csp',b).addEventListener('change',function(e){D.spread=parseFloat(String(e.target.value).replace(',','.'))||0;save();calc();});calc();}draw();},{w:460,h:470});};
+/* Caisse du jour */
+APPF.caisse=function(){openWin('caisse','Caisse du jour','💵',function(b){var day=new Date().toISOString().slice(0,10);function draw(){var L=D.caisse.filter(function(x){return x.d===day;}),tot={};L.forEach(function(x){tot[x.cur]=(tot[x.cur]||0)+(x.s==='in'?1:-1)*x.m;});
+ b.innerHTML='<div class="row"><input class="inp" id="kl" placeholder="Libellé (ex : unités Vodacom)" style="flex:1;min-width:140px"><input class="inp" id="km" type="text" inputmode="decimal" placeholder="Montant" style="width:110px"><select class="inp" id="kc"><option>CDF</option><option>USD</option><option>ZMW</option><option>TZS</option></select></div><div class="row"><button class="btn p" data-s="in">＋ Entrée</button><button class="btn" data-s="out">－ Sortie</button><input class="inp" type="date" id="kd" value="'+day+'"><button class="btn" id="kx">Partager</button></div>'
+  +'<h4>Solde du jour</h4><div>'+(Object.keys(tot).length?Object.keys(tot).map(function(c){return '<span class="chip" style="font-size:14px"><b>'+fmtN(tot[c],c==='USD'?2:0)+'</b> '+c+'</span>';}).join(''):'<span class="note">Aucune opération ce jour.</span>')+'</div>'
+  +'<table style="margin-top:8px"><tr><th>Heure</th><th>Libellé</th><th class="num">Montant</th><th></th></tr>'+L.slice().reverse().map(function(x){return '<tr><td>'+x.h+'</td><td>'+esc(x.l)+'</td><td class="num" style="color:'+(x.s==='in'?'var(--ok)':'var(--bad)')+'">'+(x.s==='in'?'+':'−')+fmtN(x.m,x.cur==='USD'?2:0)+' '+x.cur+'</td><td><button class="btn d" data-del="'+D.caisse.indexOf(x)+'" style="padding:2px 8px">✕</button></td></tr>';}).join('')+'</table>';
+ var add=function(s){var m=parseFloat(String($('#km',b).value).replace(',','.'));if(!(m>0)){toast('Entre un montant');return;}var n=new Date();D.caisse.push({d:day,h:('0'+n.getHours()).slice(-2)+':'+('0'+n.getMinutes()).slice(-2),l:$('#kl',b).value||(s==='in'?'Vente':'Dépense'),m:m,cur:$('#kc',b).value,s:s});save();draw();};
+ $$('[data-s]',b).forEach(function(x){x.onclick=function(){add(x.dataset.s);};});$('#km',b).addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();add('in');}});$('#kd',b).onchange=function(e){day=e.target.value;draw();};
+ $$('[data-del]',b).forEach(function(x){x.onclick=function(){D.caisse.splice(+x.dataset.del,1);save();draw();};});
+ $('#kx',b).onclick=function(){var t='Caisse du '+day+'\n'+L.map(function(x){return x.h+' '+x.l+' : '+(x.s==='in'?'+':'-')+x.m+' '+x.cur;}).join('\n')+'\nSolde : '+Object.keys(tot).map(function(c){return fmtN(tot[c])+' '+c;}).join(', ');extOpen('https://wa.me/?text='+encodeURIComponent(t));};}draw();},{w:560,h:480});};
+/* Internet */
+APPF.web=function(){openWin('web','Internet','🔎',function(b){b.innerHTML='<div class="row"><input class="inp" id="wq" placeholder="Adresse (ex : vodacom.cd) ou recherche" style="flex:1"><button class="btn p" id="wg">Aller</button></div><div class="note">Les sites s\'ouvrent dans le navigateur de la tablette.</div><h4>Favoris</h4><div class="row">'+[['Google','https://www.google.com'],['WhatsApp Web','https://web.whatsapp.com'],['YouTube','https://www.youtube.com'],['Kalamu',GH+'KALAMU/'],['Lushi Plan',GH+'lushi-plan/'],['LushiPratique',GH]].map(function(f){return '<button class="btn" data-u="'+f[1]+'">'+f[0]+'</button>';}).join('')+'</div>';
+ var go=function(){var q=$('#wq',b).value.trim();if(!q)return;var u=/^https?:\/\//.test(q)?q:(/^[\w-]+(\.[\w-]+)+(\/.*)?$/.test(q)?'https://'+q:'https://www.google.com/search?q='+encodeURIComponent(q));extOpen(u);};$('#wg',b).onclick=go;$('#wq',b).addEventListener('keydown',function(e){if(e.key==='Enter')go();});$$('[data-u]',b).forEach(function(x){x.onclick=function(){extOpen(x.dataset.u);};});},{w:520,h:300});};
+/* Paramètres */
+var SETW=null;function rfSettings(){if(SETW&&SETW.render)SETW.render();layoutBadge();}
+APPF.set=function(){SETW=openWin('set','Paramètres','⚙️',function(b,w){var tab=w.tab||'kb';
+ w.render=function(){var seg=function(id,opts,cur){return '<div class="seg" data-seg="'+id+'">'+opts.map(function(o){return '<button data-v="'+o[0]+'" class="'+(String(cur)===String(o[0])?'on':'')+'">'+o[1]+'</button>';}).join('')+'</div>';};var h='<div class="row">'+seg('tab',[['kb','⌨ Clavier'],['ms','🖱 Souris'],['ec','🖼 Écran'],['ap','📱 Applis'],['dt','💾 Données']],tab)+'</div>';
+  if(tab==='kb'){h+='<h4>Disposition de ton clavier physique</h4><div class="note">Choisis comment les touches doivent écrire dans Lushi Tab. Exemple : ton clavier est QWERTY mais tu veux écrire en AZERTY → choisis « AZERTY — France ». Raccourci : <span class="kbd">Alt</span>+<span class="kbd">Maj</span> pour passer d\'une disposition à l\'autre.</div><div style="display:grid;gap:6px;margin:8px 0">'+LORD.map(function(k){return '<label class="row" style="margin:0;gap:8px;padding:6px 8px;border:1px solid var(--ln);border-radius:8px;'+(D.layout===k?'border-color:var(--ac)':'')+'"><input type="radio" name="lay" value="'+k+'" '+(D.layout===k?'checked':'')+'> <b style="min-width:42px">'+LAYOUTS[k].s+'</b> '+LAYOUTS[k].n+'</label>';}).join('')+'</div>'
+   +'<h4>Essaie ici</h4><textarea class="inp" id="ktest" rows="2" style="width:100%" placeholder="Tape quelques lettres pour vérifier…"></textarea>'
+   +'<h4>Pour toute la tablette (applis Android)</h4><div class="note">Android : <b>Paramètres › Système › Langues et saisie › Clavier physique</b> › touche ton clavier › <b>Configurer la disposition</b> › choisis <b>Français</b> (AZERTY) ou <b>Anglais (US)</b>. Ça change le clavier pour toutes les applis. Pour l\'écran tactile : Gboard › Langues › Français › AZERTY.</div>'
+   +'<h4>Raccourcis comme sur PC</h4><div class="note"><span class="kbd">Win</span> ou <span class="kbd">Ctrl</span>+<span class="kbd">Échap</span> menu Démarrer · <span class="kbd">Alt</span>+<span class="kbd">Tab</span> changer de fenêtre · <span class="kbd">Ctrl</span>+<span class="kbd">W</span> fermer · <span class="kbd">Ctrl</span>+<span class="kbd">Alt</span>+<span class="kbd">L</span> verrouiller · <span class="kbd">Ctrl</span>+<span class="kbd">Alt</span>+<span class="kbd">T</span> bloc-notes · <span class="kbd">F11</span> plein écran · tape directement sur le bureau pour chercher une appli.</div>';}
+  else if(tab==='ms'){h+='<h4>Taille du pointeur</h4>'+seg('ptr',[['mini','Très petit'],['petit','Petit'],['moyen','Moyen'],['grand','Grand']],D.ptr)+'<h4>Couleur du pointeur</h4>'+seg('pcol',[['blanc','Blanc'],['noir','Noir'],['orange','Orange'],['jaune','Jaune']],D.pcol)
+   +'<h4>Vitesse du double-clic</h4>'+seg('dbl',[[300,'Rapide'],[400,'Normal'],[600,'Lent']],D.dbl)+'<div class="note" style="margin-top:8px">Dans Lushi Tab, le pointeur de la souris est remplacé par un pointeur fin et précis (flèche, main sur les boutons, barre en I dans le texte). Clic droit = menu, double-clic sur une icône = ouvrir, glisser la barre de titre = déplacer une fenêtre (contre un bord : moitié d\'écran, en haut : plein écran).</div>'
+   +'<h4>Pour toute la tablette</h4><div class="note">La taille et la vitesse du pointeur d\'Android se règlent dans <b>Paramètres › Système › Langues et saisie › Vitesse du pointeur</b> et <b>Accessibilité › Grand pointeur de souris</b> (désactive-le s\'il est trop grand).</div>';}
+  else if(tab==='ec'){h+='<h4>Fond d\'écran</h4><div class="walls">'+WALLS.map(function(g,i){return '<button data-wall="'+i+'" class="'+(D.wall===i?'on':'')+'" style="background:'+g+'"></button>';}).join('')+'</div><h4>Thème des fenêtres</h4>'+seg('theme',[['dark','Sombre'],['light','Clair']],D.theme)+'<h4>Taille du texte</h4>'+seg('fs',[[12,'Petit'],[14,'Normal'],[16,'Grand'],[18,'Très grand']],D.fs)+'<h4>Ton nom</h4><input class="inp" id="sname" value="'+esc(D.name)+'">';}
+  else if(tab==='ap'){h+='<h4>Applis Android dans le menu Démarrer</h4><div class="note">Elles s\'ouvrent avec l\'APK de Lushi Tab. Le « nom du paquet » se trouve dans le lien Play Store (…?id=<b>com.whatsapp</b>).</div><table>'+D.apps.map(function(a,i){return '<tr><td>'+a.ic+'</td><td>'+esc(a.n)+'</td><td class="note">'+esc(a.pkg)+'</td><td><button class="btn d" data-rm="'+i+'" style="padding:2px 8px">✕</button></td></tr>';}).join('')+'</table>'
+   +'<div class="row"><input class="inp" id="an" placeholder="Nom (ex : M-Pesa)" style="width:140px"><input class="inp" id="ap2" placeholder="com.exemple.appli" style="flex:1;min-width:150px"><input class="inp" id="ai" placeholder="😀" style="width:50px"><button class="btn p" id="aadd">Ajouter</button></div>';}
+  else{h+='<h4>Sauvegarde</h4><div class="note">Notes, caisse, taux et réglages sont gardés dans la tablette. Fais une copie de temps en temps.</div><div class="row"><button class="btn p" id="dexp">💾 Exporter (fichier)</button><button class="btn" id="dimp">📂 Importer</button><input type="file" id="dfile" accept=".json" style="display:none"></div><h4>Remise à zéro</h4><button class="btn d" id="drst">Tout effacer</button>';}
+  b.innerHTML=h;
+  $$('[data-seg]',b).forEach(function(sg){$$('button',sg).forEach(function(x){x.onclick=function(){var id=sg.dataset.seg,v=x.dataset.v;if(id==='tab'){tab=w.tab=v;w.render();return;}D[id]=/^\d+$/.test(v)?+v:v;save();applyLook();w.render();};});});
+  $$('input[name=lay]',b).forEach(function(x){x.onchange=function(){D.layout=x.value;save();layoutBadge();w.render();toast('Clavier : '+LAYOUTS[D.layout].n);};});
+  $$('[data-wall]',b).forEach(function(x){x.onclick=function(){D.wall=+x.dataset.wall;save();applyLook();w.render();};});
+  var sn=$('#sname',b);if(sn)sn.onchange=function(){D.name=sn.value||'Michel';save();applyLook();};
+  $$('[data-rm]',b).forEach(function(x){x.onclick=function(){D.apps.splice(+x.dataset.rm,1);save();w.render();desktop();};});
+  var aa=$('#aadd',b);if(aa)aa.onclick=function(){var n=$('#an',b).value.trim(),p=$('#ap2',b).value.trim();if(!n||!/^[a-zA-Z][\w]*(\.[\w]+)+$/.test(p)){toast('Nom et paquet valides (ex : com.whatsapp)');return;}D.apps.push({n:n,pkg:p,ic:$('#ai',b).value||'📱',c:'#3d4652'});save();w.render();desktop();};
+  var de=$('#dexp',b);if(de){de.onclick=function(){var bl=new Blob([JSON.stringify(D)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='lushitab-sauvegarde.json';document.body.appendChild(a);a.click();a.remove();};$('#dimp',b).onclick=function(){$('#dfile',b).click();};$('#dfile',b).onchange=function(e){var f=e.target.files[0];if(!f)return;f.text().then(function(t){var o=JSON.parse(t);for(var k in o)D[k]=o[k];save();location.reload();}).catch(function(){toast('Fichier illisible');});};$('#drst',b).onclick=function(){if(confirm('Effacer toutes les données de Lushi Tab ?')){localStorage.removeItem(KEY);location.reload();}};}};w.render();},{w:600,h:520});};
+/* Aide */
+APPF.help=function(){openWin('help','Aide','❓',function(b){b.innerHTML='<h4>Bienvenue dans Lushi Tab</h4><div class="note" style="font-size:13px">• <b>Menu Démarrer</b> : bouton orange en bas à gauche, ou touche <span class="kbd">Win</span>. Tape pour chercher.<br>• <b>Fenêtres</b> : déplace-les par la barre de titre, agrandis-les avec ▢ ou double-clic, redimensionne par le coin en bas à droite. Glisse contre un bord pour une moitié d\'écran.<br>• <b>Souris</b> : clic droit sur le bureau = menu ; double-clic sur une icône = ouvrir. Pointeur fin réglable dans Paramètres › Souris.<br>• <b>Clavier</b> : le badge en bas à droite (FR, US…) montre la disposition ; clique dessus ou <span class="kbd">Alt</span>+<span class="kbd">Maj</span> pour changer. Accents dans la barre sous le bloc-notes.<br>• <b>Barre des tâches</b> : Kalamu et Lushi Plan y sont épinglés. Clic droit (ou appui long) sur une appli du menu Démarrer ou du bureau › « Épingler à la barre des tâches ».<br>• <b>Tactile</b> : un toucher ouvre ; appui long sur le bureau = menu.<br>• <b>Comme écran d\'accueil</b> : avec l\'APK, appuie sur la touche Accueil et choisis « Lushi Tab » › Toujours.</div>';},{w:520,h:380});};
+
+/* ================== démarrage ================== */
+window.addEventListener('keydown',function(e){var t=topWin();if(t&&t.key&&t.el.classList.contains('act')&&!(e.target&&(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')))t.key(e);});
+window.addEventListener('resize',function(){WINS.forEach(function(w){var el=w.el;if(el.offsetLeft>innerWidth-80)el.style.left=Math.max(0,innerWidth-el.offsetWidth)+'px';if(el.offsetTop>innerHeight-90)el.style.top='0px';});});
+window.addEventListener('online',function(){tick();weather();});window.addEventListener('offline',tick);
+(function(){var P=CAP();if(P&&P.App&&P.App.addListener)P.App.addListener('backButton',function(){if($('#start').classList.contains('on')){closeStart();return;}var t=topWin();if(t){closeWin(t);return;}openStart();});})();
+applyLook();layoutBadge();desktop();pinsBar();tick();weather();setInterval(weather,30*60000);
+if(!localStorage.getItem('lushitab_hello')){try{localStorage.setItem('lushitab_hello','1');}catch(e){}setTimeout(function(){launch('help');},500);}
+</script>
+</body>
+</html>
